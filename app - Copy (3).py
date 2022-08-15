@@ -467,17 +467,17 @@ def func_detect_sku(model):
         vect = image_to_vec(url_img, hook, conv_learn)
         return vect
 
-    def detect_sku(im, cropped_image_cv):
+    def detect_sku(im):
         classes = [ 'short sleeve top', 'long sleeve top','short sleeve outwear','long sleeve outwear','sling','shorts','trousers','skirt','short sleeve dress', 'long sleeve dress', 'vest dress','sling dress']
         data_bunch = load_image_databunch("cropped_dataset", classes)
         learner = load_model(data_bunch, models.resnet34, "stg1-rn34")
         sf = SaveFeatures(learner.model[1][5])
         w, h = im.size
-        if (w>540) | (h>540):
+        if (w>640) | (h>640):
             if w > h:
-                correction = w - 540
+                correction = w - 640
             else:
-                correction = h - 540
+                correction = h - 640
             im = im.resize((w-correction,h-correction), pil_img.ANTIALIAS)
         elif (w<320) | (h<320):
             if h > w:
@@ -489,8 +489,8 @@ def func_detect_sku(model):
         lsh = pickle.load(open("lsh.p", "rb"))
         list_similar_images, img_res_1 = view_similar_images(im, learner, sf, lsh, "output/output.png", 5)
         #img_res_1 = cv.imread('output/output.png', 1)
-        st.pyplot(img_res_1)
-        bool_find, img_res_2 = get_most_similar_image(cropped_image_cv, list_similar_images, w , h)
+        st.pyplot(img_res_1, width = 300)
+        bool_find, img_res_2 = get_most_similar_image(im, list_similar_images, w , h)
         if bool_find:
             st.image(img_res_2)
 
@@ -524,9 +524,8 @@ def func_detect_sku(model):
         return keypoints, descriptors
 
 
-    def get_most_similar_image(img1, list_similar_images, w , h):
-        #img1 = cv.imread('cropped_image.jpg',cv.IMREAD_GRAYSCALE)
-        img1 = cv2.cvtColor(img1, cv.COLOR_RGB2GRAY)
+    def get_most_similar_image(im, list_similar_images, w , h):
+        img1 = cv.imread('cropped_image.jpg',cv.IMREAD_GRAYSCALE)
         img1 = resize(img1,w, h)
         bool_find = False
         for path_similar_image in list_similar_images:
@@ -620,6 +619,7 @@ def func_detect_sku(model):
         bytes_data = uploaded_file.getvalue()
         file_bytes = np.asarray(bytearray(bytes_data), dtype=np.uint8)
         img_orig = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+        print(img_orig)
         img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2RGB)
         result = get_preds(img)
         result_copy = result.copy()
@@ -634,17 +634,17 @@ def func_detect_sku(model):
                 ymin = int(ymin)
                 xmax = int(xmax)
                 ymax = int(ymax)
-                cropped_image = img[ymin:ymax, xmin:xmax]
+                cropped_image = img_orig[ymin:ymax, xmin:xmax]
                 w, h, t = cropped_image.shape
                 dict_cropped_image[w+h]=cropped_image
         if len(dict_cropped_image)!=0:
             max_element = max(dict_cropped_image.keys())
-            cropped_image_cv = dict_cropped_image[max_element]
-            cropped_image_pil = pil_img.fromarray(cropped_image_cv)
-            #cv.imwrite('cropped_image.jpg', cropped_image)
-            #cropped_image = pil_img.open('cropped_image.jpg')
+            cropped_image = dict_cropped_image[max_element]
+            print(cropped_image)
+            cv.imwrite('cropped_image.jpg', cropped_image)
+            cropped_image = pil_img.open('cropped_image.jpg')
             #image1 = cv.imread(filename = 'cropped_image.jpg', flags = cv.IMREAD_GRAYSCALE)
-            detect_sku(cropped_image_pil, cropped_image_cv)
+            detect_sku(cropped_image)
             
             
 
