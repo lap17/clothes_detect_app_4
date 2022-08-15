@@ -546,7 +546,7 @@ def func_detect_sku(model):
     def view_similar_images(url_img, conv_learn, hook, lsh, output_path, n_items):
         ## Converting Image to vector
         vect = image_to_vec(url_img, hook, conv_learn)
-        #print(vect)
+        print(vect)
         ## Finding approximate nearest neighbours using LSH
         response = lsh.query(vect, num_results=n_items+1, distance_func="hamming")
         list_images = []
