@@ -330,7 +330,7 @@ def func_video(model):
     def get_list_similar_images(url_img, conv_learn, hook, lsh, output_path, n_items):
         ## Converting Image to vector
         vect = image_to_vec(url_img, hook, conv_learn)
-        #print(vect)
+        ## print(vect)
         ## Finding approximate nearest neighbours using LSH
         response = lsh.query(vect, num_results=n_items+1, distance_func="hamming")
         list_images = []
@@ -486,8 +486,8 @@ def func_video(model):
                 text_for_vis = '{} {}'.format(class_, str(conf.round(2)))
                 img = cv2.putText(img, text_for_vis, (int(xtext), int(ytext)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, rgb_colors[label], 2,)
                 if agree:
-                    w, h, t = cropped_image.shape
                     cropped_image = img[ymin:ymax, xmin:xmax]
+                    w, h, t = cropped_image.shape
                     dict_cropped_image[w+h] = cropped_image
                 img = cv2.rectangle(img, p0, p1, rgb_colors[label], 2) 
                 ytext = ymin - 10 if ymin - 10 > 10 else ymin + 15
