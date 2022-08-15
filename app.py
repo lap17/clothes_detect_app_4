@@ -499,11 +499,11 @@ def func_video(model):
                 cropped_image_cv = dict_cropped_image[max_element]
                 cropped_image_pil = pil_img.fromarray(cropped_image_cv)
                 bool_find, sku_image = detect_sku(cropped_image_pil, cropped_image_cv)
+                html_cropped_image_cv = img_to_html(cropped_image_cv)
                 if bool_find:
                     html_sku_image = img_to_html(sku_image)
-                    html_cropped_image_cv = img_to_html(cropped_image_cv)
                 else:
-                    html_cropped_image_cv = 'No match found'
+                    html_sku_image = 'No match found'
                 with lock:
                     result_queue.insert(0, {'cropped_frame': html_cropped_image_cv, 'sku': html_sku_image})
         return av.VideoFrame.from_ndarray(img, format="bgr24")
