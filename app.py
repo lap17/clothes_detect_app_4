@@ -487,12 +487,12 @@ def func_detect_sku(model):
             im = im.resize((w+correction,h+correction), pil_img.ANTIALIAS)
         im = im.convert('RGB')
         lsh = pickle.load(open("lsh.p", "rb"))
-        list_similar_images = view_similar_images(im, learner, sf, lsh, "output/output.png", 5)
-        img_res_1 = cv.imread('output/output.png', 1)
-        st.image(img_res_1, width = 300)
+        list_similar_images, img_res_1 = view_similar_images(im, learner, sf, lsh, "output/output.png", 5)
+        #img_res_1 = cv.imread('output/output.png', 1)
+        st.pyplot(img_res_1, width = 300)
         bool_find, img_res_2 = get_most_similar_image(im, list_similar_images, w , h)
         if bool_find:
-            st.image(img_res_2, width = 300)
+            st.image(img_res_2)
 
 
     def get_key_points_by_images(image1, image2):
@@ -570,8 +570,10 @@ def func_detect_sku(model):
                 plt.axis("off")
                 plt.title(str(i - 1))
         fig.tight_layout()
-        fig.savefig(output_path, bbox_inches="tight", pad_inches=0)
-        return list_images
+        #fig.savefig(output_path, bbox_inches="tight", pad_inches=0)
+        #img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep='')
+        #img  = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+        return list_images, fig
 
     CLASSES_CUSTOM = [ 'short sleeve top', 'long sleeve top','short sleeve outwear','long sleeve outwear','vest','sling','shorts','trousers','skirt','short sleeve dress', 'long sleeve dress','vest dress','sling dress']
     DEFAULT_CONFIDENCE_THRESHOLD = 0.4
